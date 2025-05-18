@@ -1,5 +1,6 @@
 package com.graduation_project.street2shelter.service;
 
+import com.graduation_project.street2shelter.DTO.Admin;
 import com.graduation_project.street2shelter.entity.NgoDogInfo;
 import com.graduation_project.street2shelter.entity.Users;
 import com.graduation_project.street2shelter.repository.UsersRepo;
@@ -39,6 +40,11 @@ public class UsersService {
         return usersRepo.findByEmailAndPassword(email, password);
     }
 
+    public Admin loginAdminUser(String email, String password) {
+        //   return usersRepo.login(email,password);
+        return usersRepo.findAdminByEmailAndPassword(email, password);
+    }
+
     public String findOtp(String email, int otp) {
 
         Optional<Users> existingUser = Optional.ofNullable(usersRepo.findByEmail(email));
@@ -46,11 +52,13 @@ public class UsersService {
             if (existingUser != null) {
                 Users user = usersRepo.findByEmailAndOtp(email, otp);
                 if (user != null) {
-                    String responseBody = "{\n" + "\"Current OTP is \":" + user.getOtp() + "\n}";
-                    return responseBody;
+//                    String responseBody = "{\n" + "\"Current OTP is \":" + user.getOtp() + "\n}";
+//                    return responseBody;
+                    return "1";
                 } else {
-                    String responseBody = "{\n" + "\"User\":" + "User not found with email" + "\n}";
-                    return responseBody;
+//                    String responseBody = "{\n" + "\"User\":" + "User not found with email" + "\n}";
+//                    return responseBody;
+                    return "2";
                 }
             } else {
                 throw new RuntimeException("User not found with email " + email);

@@ -51,8 +51,10 @@ public class Ngos {
     private LocalDateTime dateJoined;
     @Column(name = "otp")
     private Integer otp;
-
-
+    @Column(name = "approved_ngo")
+    private int approvedNgo;
+    @Column(name = "is_active")
+    private int isActive;
 
 
 

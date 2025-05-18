@@ -28,24 +28,50 @@ public class NgosController {
         return ngosService.findAllNgos();
     }
 
+    @GetMapping("/findallngosnotapproved")
+    @ResponseBody
+    public List<Ngos> getAllNgoNotApproved() {
+        return ngosService.getAllNgoNotApproved();
+    }
+
+
     @GetMapping("/login")
     @ResponseBody
     public ResponseEntity<?> login(@RequestParam String email, @RequestParam String password) {
         Ngos ngos = ngosService.loginNgos(email, password);
         if (ngos == null) {
             String responseBody = "{\n" +
-                    "    \"errorMessage\": \"The ngos not found\"" + "\n}";
+                    "    \"errorMessage\": \"The ngos not found \"" + "\n}";
             return new ResponseEntity<>(responseBody, HttpStatus.BAD_REQUEST);
         } else {
-            return new ResponseEntity<>(ngos, HttpStatus.OK);
+            if (ngos.getApprovedNgo() == 0){//nada
+                String responseBody = "{\n" +
+                        "    \"errorMessage\": \"The ngo registration not approved\"" + "\n}";
+                return new ResponseEntity<>(responseBody, HttpStatus.BAD_REQUEST);
+            }
+            else {
+                if (ngos.getIsActive()==0)
+                return new ResponseEntity<>(ngos, HttpStatus.OK);
+                else {
+                    String responseBody = "{\n" +
+                            "    \"errorMessage\": \"The ngo is not active\"" + "\n}";
+                    return new ResponseEntity<>(responseBody, HttpStatus.BAD_REQUEST);
+                }
+            }
+
         }
     }
 
     //nada
     @GetMapping("/otp")
     @ResponseBody
-    public String otp(@RequestParam String email,@RequestParam int otp) {
-        return ngosService.findOtp(email,otp);
+    public ResponseEntity<String> otp(@RequestParam String email,@RequestParam int otp) {
+        String findNgoOtp = ngosService.findOtp(email,otp);
+        if (findNgoOtp.equals("1")) {
+            return ResponseEntity.ok("The otP has been send successful "); // 200 OK
+        } else {
+            return ResponseEntity.status(500).body("The email or otp wrong ");
+        }
     }
 
     /*@GetMapping("/otpx")
@@ -110,6 +136,70 @@ public class NgosController {
             return new ResponseEntity<>(responseBody, HttpStatus.BAD_REQUEST);
         }
     }
+
+    @PutMapping("/aproveNgo")
+    @ResponseBody
+    public ResponseEntity<?> approveNgos(@RequestBody Ngos ngos, BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            return new ResponseEntity<>(buildValidationErrorResponse(bindingResult), HttpStatus.BAD_REQUEST);
+        }
+        try {
+            //return new ResponseEntity<>(ngos, HttpStatus.OK);
+            if (ngos.getApprovedNgo()==1){
+                ngosService.approveNgo(ngos.getEmail(), ngos);
+                String responseBody = "{\n" + "\"NgoApproved\":" + "The NGO has been Approved" + "\n}";
+                return new ResponseEntity<>(responseBody, HttpStatus.OK);
+            } else if (ngos.getApprovedNgo()==0) {
+                ngosService.findByEmail(ngos.getEmail());
+                ngosService.deleteNgos(ngos.getEmail());
+                String responseBody = "{\n" + "\"NgoApproved\":" + "The NGO has been rejected and deleted" + "\n}";
+                return new ResponseEntity<>(responseBody, HttpStatus.OK);
+            }
+            else {
+                String responseBody = "{\n" + "\"NgoApproved\":" + "the vale must be accepted or rejected" + "\n}";
+                return new ResponseEntity<>(responseBody, HttpStatus.BAD_REQUEST);
+            }
+
+        } catch (Exception e) {
+            // Handle other exceptions (if any)
+            String responseBody = "{\n" + "\"errorMessage\":" + e.getMessage() + "\n}";
+            return new ResponseEntity<>(responseBody, HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @PutMapping("/activeNgo")
+    @ResponseBody
+    public ResponseEntity<?> findIsActiveNgo(@RequestBody Ngos ngos, BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            return new ResponseEntity<>(buildValidationErrorResponse(bindingResult), HttpStatus.BAD_REQUEST);
+        }
+        try {
+            //return new ResponseEntity<>(ngos, HttpStatus.OK);
+            if (ngos.getIsActive()==1){
+                ngosService.getIsActiveNgo(ngos.getEmail(),ngos.getIsActive(), ngos);
+                String responseBody = "{\n" + "\"NgoActiveStatus\":" + "The NGO is inactive" + "\n}";
+                return new ResponseEntity<>(responseBody, HttpStatus.OK);
+            }
+            else if (ngos.getIsActive()==0){
+                ngosService.getIsActiveNgo(ngos.getEmail(),ngos.getIsActive(), ngos);
+                String responseBody = "{\n" + "\"NgoActiveStatus\":" + "The NGO is active" + "\n}";
+                return new ResponseEntity<>(responseBody, HttpStatus.OK);
+            }
+            else {
+                String responseBody = "{\n" + "\"Message\":" + "the value must be inactive or active" + "\n}";
+                return new ResponseEntity<>(responseBody, HttpStatus.BAD_REQUEST);
+            }
+
+        } catch (Exception e) {
+            // Handle other exceptions (if any)
+            String responseBody = "{\n" + "\"errorMessage\":" + e.getMessage() + "\n}";
+            return new ResponseEntity<>(responseBody, HttpStatus.BAD_REQUEST);
+        }
+    }
+
+
 
     @PutMapping("/password")
     @ResponseBody

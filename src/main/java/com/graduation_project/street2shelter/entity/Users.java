@@ -53,6 +53,8 @@ public class Users {
     private LocalDateTime dateJoined;
     @Column(name = "otp")
     private Integer otp;
+    @Column(name = "user_admin")
+    private int userAdmin;
 
 
 }

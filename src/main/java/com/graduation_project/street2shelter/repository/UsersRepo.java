@@ -1,5 +1,6 @@
 package com.graduation_project.street2shelter.repository;
 
+import com.graduation_project.street2shelter.DTO.Admin;
 import com.graduation_project.street2shelter.entity.NgoDogInfo;
 import com.graduation_project.street2shelter.entity.Users;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -20,7 +21,12 @@ public interface UsersRepo extends JpaRepository<Users, Long> {
     //Users login(String email,String password);
     //@Query(value="SELECT 1 FROM  Users WHERE Users.email = :email AND Users.password = :password", nativeQuery = true)
     //Users login(@Param("email") String email, @Param("password") String password);
-    Users findByEmailAndPassword(String email, String password);
+//    Users findByEmailAndPassword(String email, String password);
+    @Query(value = "SELECT * FROM Users WHERE Users.email = :email and password = :password and user_admin = 0", nativeQuery = true)
+    Users findByEmailAndPassword(@Param("email") String email,@Param("password") String password);
+//
+    @Query(value = "SELECT concat(first_name,' ',last_name) as name,email,password,phone_number,user_id FROM Users WHERE Users.email = :email and password = :password and user_admin = 1", nativeQuery = true)
+    Admin findAdminByEmailAndPassword(@Param("email") String email, @Param("password") String password);
 
     Users findByEmailAndOtp(String email, int otp);
 

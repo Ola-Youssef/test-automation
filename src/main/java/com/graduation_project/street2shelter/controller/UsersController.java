@@ -1,6 +1,7 @@
 package com.graduation_project.street2shelter.controller;
 
 import com.fasterxml.jackson.core.io.JsonStringEncoder;
+import com.graduation_project.street2shelter.DTO.Admin;
 import com.graduation_project.street2shelter.entity.NgoDogInfo;
 import com.graduation_project.street2shelter.entity.Users;
 import com.graduation_project.street2shelter.exception.ValidationErrorDetail;
@@ -70,13 +71,33 @@ public class UsersController {
         }
     }
 
-    //hatem
-    @GetMapping("/otp")
+
+    @GetMapping("/loginadmin")
     @ResponseBody
-    public String otp(@RequestParam String email,@RequestParam int otp) {
-        return usersService.findOtp(email,otp);
+    public ResponseEntity<?> loginAdmin(@RequestParam String email, @RequestParam String password) {
+        Admin admin = usersService.loginAdminUser(email, password);
+        if (admin == null) {
+            String responseBody = "{\n" +
+                    "    \"errorMessage\": \"The user not found\"" + "\n}";
+            return new ResponseEntity<>(responseBody, HttpStatus.BAD_REQUEST);
+        } else {
+            return new ResponseEntity<>(admin, HttpStatus.OK);
+        }
     }
 
+
+
+    //nada
+    @GetMapping("/otp")
+    @ResponseBody
+    public ResponseEntity<String> otp(@RequestParam String email,@RequestParam int otp) {
+        String findOtp = usersService.findOtp(email, otp);
+        if (findOtp.equals("1")) {
+            return ResponseEntity.ok("The otP has been send successful "); // 200 OK
+        } else {
+            return ResponseEntity.status(500).body("The email or otp wrong ");
+        }
+    }
     /*@GetMapping("/otpx")
     @ResponseBody
     public String getOtp(@RequestParam String email) {
@@ -124,7 +145,7 @@ public class UsersController {
 
     @PutMapping("")
     @ResponseBody
-    public ResponseEntity<?> updateUser(@RequestBody @Validated Users users, BindingResult bindingResult) {
+    public ResponseEntity<?> updateUser(@RequestBody Users users, BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
             return new ResponseEntity<>(buildValidationErrorResponse(bindingResult), HttpStatus.BAD_REQUEST);

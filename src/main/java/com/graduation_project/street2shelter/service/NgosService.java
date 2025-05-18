@@ -28,9 +28,20 @@ public class NgosService {
         return ngosRepo.findAll();
     }
 
+    public List<Ngos> getAllNgoNotApproved() {
+        //return ngosRepo.Login(email,password) ;
+        return ngosRepo.findAllNgoNotApproved();
+    }
+
+
     public Ngos loginNgos(String email, String password) {
         //   return ngosRepo.login(email,password);
-        return ngosRepo.findByEmailAndPassword(email, password);
+        return ngosRepo.getLoginByEmailAndPassword(email, password);
+    }
+
+    public Ngos findByEmail(String email) {
+        //   return ngosRepo.login(email,password);
+        return ngosRepo.getByEmail(email);
     }
 
     public String findOtp(String email, int otp) {
@@ -40,11 +51,13 @@ public class NgosService {
             if (existingUser != null) {
                 Ngos ngos = ngosRepo.findByEmailAndOtp(email, otp);
                 if (ngos != null) {
-                    String responseBody = "{\n" + "\"Current OTP is \":" + ngos.getOtp() + "\n}";
-                    return responseBody;
+//                    String responseBody = "{\n" + "\"Current OTP is \":" + ngos.getOtp() + "\n}";
+//                    return responseBody;
+                    return "1";
                 } else {
-                    String responseBody = "{\n" + "\"Ngos\":" + "User not found with email" + "\n}";
-                    return responseBody;
+//                    String responseBody = "{\n" + "\"Ngos\":" + "User not found with email" + "\n}";
+//                    return responseBody;
+                    return "2";
                 }
             } else {
                 throw new RuntimeException("Ngos not found with email " + email);
@@ -99,6 +112,36 @@ public class NgosService {
 
         } else {
             throw new RuntimeException("Ngos not found with email " + email);
+        }
+    }
+
+    public void approveNgo(String email, Ngos ngos) {
+        Optional<Ngos> existingNgos = Optional.ofNullable(ngosRepo.getByEmail(email));
+        if (existingNgos.isPresent()) {
+            if (existingNgos.get().getApprovedNgo()==0){
+                ngosRepo.approveNgo(email);
+            }
+            else {
+                throw new RuntimeException("Ngos is approved" + email);
+            }
+
+        } else {
+            throw new RuntimeException("Ngos not found with email");
+        }
+    }
+
+    public void getIsActiveNgo(String email,int isActive, Ngos ngos) {
+        Optional<Ngos> existingNgos = Optional.ofNullable(ngosRepo.getByEmail(email));
+        if (existingNgos.isPresent()) {
+            if (existingNgos.get().getIsActive()==0 ||existingNgos.get().getIsActive()==1){
+
+                ngosRepo.isActiveNgo(email,isActive);
+            }
+            else {
+                throw new RuntimeException("The value must be active or inactive " );
+            }
+        } else {
+            throw new RuntimeException("Ngos not found with email");
         }
     }
 
