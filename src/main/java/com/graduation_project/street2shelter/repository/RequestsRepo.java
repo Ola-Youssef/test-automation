@@ -22,6 +22,30 @@ public interface RequestsRepo extends JpaRepository<Requests, Long> {
             "where users.user_id = requests.user_id  and request_id = :requestId ", nativeQuery = true)
     RequestUser getRequestUser(@Param("requestId") int requestId);
 
+
+    @Query(value = "SELECT requests.request_id,requests.user_id,requests.status,requests.longitude,requests.latitude,submission_time,description,dog_image,dogs_count,street_address,CONCAT(first_name,' ',last_name) \n" +
+            "user_name, users.phone_number,\n" +
+            "ngos.name  ngo,\n" +
+            "(select transaction_date from ngo_assignments,ngo_request_updates \n" +
+            "where ngo_assignments.request_id = requests.request_id \n" +
+            " and ngo_assignments.status = \"Accepted\" and ngo_assignments.is_actve =0 and ngo_request_updates.assignment_id = ngo_assignments.assignment_id and ngo_assignments.ngo_id = :ngoId)\n" +
+            " accepted_date,\n" +
+            " ngos.name  ngo,\n"+
+            " (select ngo_request_updates.transaction_date from ngo_assignments,\n" +
+            " ngo_request_updates where ngo_assignments.request_id = requests.request_id and ngo_assignments.status = \"Mission Done\" and ngo_assignments.is_actve =0 \n" +
+            " and ngo_request_updates.assignment_id = ngo_assignments.assignment_id and ngo_request_updates.status = \"Mission Done\" and ngo_assignments.ngo_id = :ngoId) mission_done_date\n" +
+            " FROM requests, users,ngo_assignments,ngos\n" +
+            " where users.user_id = requests.user_id  \n" +
+            " and ngo_assignments.request_id = requests.request_id  \n" +
+            " and ngo_assignments.is_actve = 0\n" +
+            " and ngos.ngo_id = ngo_assignments.ngo_id\n" +
+            " and \n" +
+            " (ngo_assignments.status = requests.status\n" +
+            " or \n" +
+            " (ngo_assignments.status = \"Assigned\" and requests.status = \"Inprogress\"))\n" +
+            " and ngo_assignments.ngo_id = :ngoId ", nativeQuery = true)
+    List<RequestUser> getNgoRequests(@Param("ngoId") int ngoId);
+
 //    @Query(value = "SELECT * FROM street2shelter.requests where status = 'Inprogress' ", nativeQuery = true)
 @Query(value = "SELECT request_id,requests.user_id,status,longitude,latitude,submission_time,description,dog_image,dogs_count,street_address,CONCAT(first_name,' ',last_name) user_name,phone_number," +
         "null as accepted_ngo,null as accepted_date,null as mission_done_ngo,null as mission_done_date \n" +

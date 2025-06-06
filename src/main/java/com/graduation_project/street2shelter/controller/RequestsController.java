@@ -64,6 +64,21 @@ public class RequestsController {
                 .body(requestUser);
     }
 
+    @GetMapping("/getNgoRequstinfo")
+    @ResponseBody
+    public ResponseEntity<Object> findNgoRequests(@RequestParam int ngoId) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("X-Response-Info", "Request data fetched successfully");
+        headers.add("X-Custom-Header", "Street2ShelterApp");
+        List<RequestUser> requestUser = requestsService.findNgoRequests(ngoId);
+
+        return ResponseEntity.ok()
+                .headers(headers)
+                .body(requestUser);
+    }
+
+
+
     @PostMapping("/createrequests")
     @ResponseBody
     public ResponseEntity<?> createRequests(@RequestBody @Validated Requests requests, BindingResult bindingResult) {

@@ -25,6 +25,10 @@ public class RequestsService {
         return requestsRepo.getRequestUser(requestId);
     }
 
+    public List<RequestUser> findNgoRequests(int requestId) {
+        return requestsRepo.getNgoRequests(requestId);
+    }
+
 
     public List<RequestUser> getInprogressRequests() {
         return requestsRepo.getInprogressRequests();
