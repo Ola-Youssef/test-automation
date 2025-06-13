@@ -110,6 +110,7 @@ public class NgosController {
             return new ResponseEntity<>(buildValidationErrorResponse(bindingResult), HttpStatus.BAD_REQUEST);
         }
         try {
+            ngos.setApprovedNgo(1); // Set approvedNgo to 1 (Added)
             Ngos createdNgos = ngosService.createNgo(ngos);
             return new ResponseEntity<>(createdNgos, HttpStatus.CREATED);
         } catch (Exception e) {

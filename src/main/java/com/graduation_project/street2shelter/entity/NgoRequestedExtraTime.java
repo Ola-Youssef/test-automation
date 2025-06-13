@@ -9,6 +9,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
 @Entity
@@ -45,5 +46,7 @@ public class NgoRequestedExtraTime {
     private LocalDateTime extraTimeActionExpiredDate;
     @Column(name = "is_active")
     private int isActive;
+
+
 }
 

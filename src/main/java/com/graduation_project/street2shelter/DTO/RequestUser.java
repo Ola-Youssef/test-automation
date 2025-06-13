@@ -49,6 +49,11 @@ public class RequestUser {
         this.missionDoneNgo = missionDoneNgo;
         this.missionDoneDate = missionDoneDate;
     }
+// Added
+    public RequestUser() {
+
+    }
+
 
     public Long getRequestId() {
         return requestId;

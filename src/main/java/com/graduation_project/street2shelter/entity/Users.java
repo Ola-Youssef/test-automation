@@ -19,7 +19,7 @@ import jakarta.validation.constraints.NotNull;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "users", schema = "street2shelter")
+@Table(name = "USERS") //, schema = "street2shelter" (Modified)
 public class Users {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
